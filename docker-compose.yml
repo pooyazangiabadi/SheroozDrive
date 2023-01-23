@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   mongo:
     image: mongo:4.4
@@ -5,7 +6,7 @@ services:
     hostname: mongo
     restart: unless-stopped
     ports:
-      - $MONGO_HOST_PORT:27017
+      - "${MONGO_HOST_PORT}:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=$MONGO_ROOT_USERNAME
       - MONGO_INITDB_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
@@ -24,13 +25,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: $APP_NAME
     container_name: $APP_NAME
     restart: always
     depends_on:
       - mongo
     ports:
-      - $SERVER_HOST_PORT:8000
+      - "${SERVER_HOST_PORT}:8000"
     environment:
       - SERVER_PORT=8000
       - SPRING_PROFILES_ACTIVE=prod
