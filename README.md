@@ -5,6 +5,10 @@ Go to the project directory and execute the following command in the terminal
 docker-compose up
 ```
 
+### Swagger ui url
+```
+http://localhost:8000/swagger-ui/index.html
+```
 ### Create user in Mongo
 ```
 use sherooz
