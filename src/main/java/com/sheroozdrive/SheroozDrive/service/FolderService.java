@@ -32,8 +32,9 @@ public class FolderService {
     }
 
     public FolderDto save(FolderDto folderDto) {
-        if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.parentId()))
-            throw new FolderDuplicateException(folderDto.name());
+        if(folderDto.id()!=null)
+            if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.parentId()))
+                throw new FolderDuplicateException(folderDto.name());
 
         Folder folder=folderMapper.convertToModel(folderDto);
         return folderMapper.convertToDto(folderRepository.save(folder));

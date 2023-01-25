@@ -2,6 +2,7 @@ package com.sheroozdrive.SheroozDrive.controller;
 
 import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,11 +26,13 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@RequestBody UserDto user) {
         return userService.save(user);
     }
 
     @PutMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserDto update(@RequestBody UserDto user) {
         return userService.save(user);
     }

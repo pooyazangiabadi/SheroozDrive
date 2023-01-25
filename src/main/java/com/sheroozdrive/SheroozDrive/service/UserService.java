@@ -36,9 +36,9 @@ public class UserService {
         if(userDto.id()!=null)
             if (!userRepository.existsById(userDto.id()))
                 throw new UserNotFoundException(userDto.id());
-
-        if(userRepository.existsByEmail(userDto.email()))
-            throw new UserDuplicateException(userDto.email());
+        else
+            if(userRepository.existsByEmail(userDto.email()))
+                throw new UserDuplicateException(userDto.email());
 
         User user=userMapper.convertToModel(userDto);
         return userMapper.convertToDto(userRepository.save(user));
