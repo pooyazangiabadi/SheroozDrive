@@ -6,6 +6,7 @@ import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,11 +33,16 @@ public class FolderService {
     }
 
     public FolderDto save(FolderDto folderDto) {
-        if(folderDto.id()!=null)
+        Folder folder;
+        if(folderDto.id()!=null) {
+            folder=folderRepository.findById(folderDto.id()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
+            BeanUtils.copyProperties(folderDto, folder);
+        }else{
             if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.parentId()))
                 throw new FolderDuplicateException(folderDto.name());
+            folder=folderMapper.convertToModel(folderDto);
+        }
 
-        Folder folder=folderMapper.convertToModel(folderDto);
         return folderMapper.convertToDto(folderRepository.save(folder));
     }
 

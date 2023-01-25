@@ -6,6 +6,7 @@ import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.model.mapper.UserMapper;
 import com.sheroozdrive.SheroozDrive.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,14 +34,16 @@ public class UserService {
     }
 
     public UserDto save(UserDto userDto) {
-        if(userDto.id()!=null)
-            if (!userRepository.existsById(userDto.id()))
-                throw new UserNotFoundException(userDto.id());
-        else
-            if(userRepository.existsByEmail(userDto.email()))
+        User user;
+        if(userDto.id()!=null) {
+            user=userRepository.findById(userDto.id()).orElseThrow(() -> new UserNotFoundException(userDto.id()));
+            BeanUtils.copyProperties(userDto, user);
+        }else {
+            if (userRepository.existsByEmail(userDto.email()))
                 throw new UserDuplicateException(userDto.email());
+            user=userMapper.convertToModel(userDto);
+        }
 
-        User user=userMapper.convertToModel(userDto);
         return userMapper.convertToDto(userRepository.save(user));
     }
 
