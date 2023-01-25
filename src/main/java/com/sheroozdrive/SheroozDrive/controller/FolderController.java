@@ -1,9 +1,7 @@
 package com.sheroozdrive.SheroozDrive.controller;
 
-import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.service.FolderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +17,12 @@ public class FolderController {
     }
 
     @GetMapping("/{id}")
-    public Folder findById(@PathVariable String id) {
+    public FolderDto findById(@PathVariable String id) {
         return folderService.findById(id);
     }
 
     @GetMapping("/owner/{ownerId}")
-    public List<Folder> findByOwnerId(@PathVariable String ownerId) {
+    public List<FolderDto> findByOwnerId(@PathVariable String ownerId) {
         return folderService.findByOwnerId(ownerId);
     }
 

@@ -1,5 +1,7 @@
 package com.sheroozdrive.SheroozDrive.service;
 
+import com.sheroozdrive.SheroozDrive.exception.UserDuplicateException;
+import com.sheroozdrive.SheroozDrive.exception.UserNotFoundException;
 import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.model.mapper.UserMapper;
@@ -17,17 +19,28 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserDto findByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user==null)
+            throw new UserNotFoundException(email);
+
+        return userMapper.convertToDto(user);
     }
 
-    public User findById(String id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDto findById(String id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        return userMapper.convertToDto(user);
     }
 
     public UserDto save(UserDto userDto) {
-        User user=new User();
-        user=userMapper.convertToModel(userDto);
+        if(userDto.id()!=null)
+            if (!userRepository.existsById(userDto.id()))
+                throw new UserNotFoundException(userDto.id());
+
+        if(userRepository.existsByEmail(userDto.email()))
+            throw new UserDuplicateException(userDto.email());
+
+        User user=userMapper.convertToModel(userDto);
         return userMapper.convertToDto(userRepository.save(user));
     }
 

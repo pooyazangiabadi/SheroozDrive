@@ -1,11 +1,9 @@
 package com.sheroozdrive.SheroozDrive.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
 
 public record UserDto(String id,
-                      String name,
-                      String email,
+                      @NotNull(message = "Name not be null") String name,
+                      @NotNull(message = "Email not be null") String email,
                       String password) {
 }

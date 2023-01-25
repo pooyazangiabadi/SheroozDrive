@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FolderRepository extends MongoRepository<Folder, String> {
     List<Folder> findByOwnerId(String ownerId);
+    boolean existsByNameAndParentId(String name, String parentId);
 }

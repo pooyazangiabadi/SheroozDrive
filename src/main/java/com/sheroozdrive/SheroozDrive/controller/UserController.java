@@ -1,9 +1,7 @@
 package com.sheroozdrive.SheroozDrive.controller;
 
-import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,12 +15,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable String id) {
+    public UserDto findById(@PathVariable String id) {
         return userService.findById(id);
     }
 
     @GetMapping("/email/{email}")
-    public User findByEmail(@PathVariable String email) {
+    public UserDto findByEmail(@PathVariable String email) {
         return userService.findByEmail(email);
     }
 

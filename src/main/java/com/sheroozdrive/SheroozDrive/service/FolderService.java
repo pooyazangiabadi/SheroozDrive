@@ -1,5 +1,7 @@
 package com.sheroozdrive.SheroozDrive.service;
 
+import com.sheroozdrive.SheroozDrive.exception.FolderDuplicateException;
+import com.sheroozdrive.SheroozDrive.exception.FolderNotFoundException;
 import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
@@ -19,17 +21,21 @@ public class FolderService {
         this.folderMapper = folderMapper;
     }
 
-    public List<Folder> findByOwnerId(String ownerId) {
-        return folderRepository.findByOwnerId(ownerId);
+    public List<FolderDto> findByOwnerId(String ownerId) {
+        List<Folder> folder=folderRepository.findByOwnerId(ownerId);
+        return folder.stream().map(folderMapper::convertToDto).toList();
     }
 
-    public Folder findById(String id) {
-        return folderRepository.findById(id).orElse(null);
+    public FolderDto findById(String id) {
+        Folder folder=folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException(id));
+        return folderMapper.convertToDto(folder);
     }
 
     public FolderDto save(FolderDto folderDto) {
-        Folder folder=new Folder();
-        folder=folderMapper.convertToModel(folderDto);
+        if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.parentId()))
+            throw new FolderDuplicateException(folderDto.name());
+
+        Folder folder=folderMapper.convertToModel(folderDto);
         return folderMapper.convertToDto(folderRepository.save(folder));
     }
 
