@@ -8,9 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 @Getter
 @Setter
-public class File {
-    @Id
-    private String id;
+public class File extends Base{
     private String name;
     private long size;
     private String ownerId;

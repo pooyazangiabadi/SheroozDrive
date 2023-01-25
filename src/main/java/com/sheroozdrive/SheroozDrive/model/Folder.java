@@ -1,6 +1,8 @@
 package com.sheroozdrive.SheroozDrive.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,13 +13,20 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-public class Folder {
-    @Id
-    private String id;
+@NoArgsConstructor
+public class Folder extends Base{
     private String name;
     private String ownerId;
+    private String parentId;
     private List<String> fileIds;
 
     @DBRef
     private List<File> files;
+
+    public Folder(String id, String name, String ownerId, String parentId) {
+        super(id);
+        this.name = name;
+        this.ownerId = ownerId;
+        this.parentId = parentId;
+    }
 }

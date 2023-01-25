@@ -1,6 +1,7 @@
 package com.sheroozdrive.SheroozDrive.controller;
 
 import com.sheroozdrive.SheroozDrive.model.Folder;
+import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +29,12 @@ public class FolderController {
     }
 
     @PostMapping
-    public Folder create(@RequestBody Folder folder) {
+    public FolderDto create(@RequestBody FolderDto folder) {
         return folderService.save(folder);
     }
 
     @PutMapping
-    public Folder update(@RequestBody Folder folder) {
+    public FolderDto update(@RequestBody FolderDto folder) {
         return folderService.save(folder);
     }
 

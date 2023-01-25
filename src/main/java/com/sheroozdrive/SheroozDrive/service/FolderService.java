@@ -1,8 +1,9 @@
 package com.sheroozdrive.SheroozDrive.service;
 
 import com.sheroozdrive.SheroozDrive.model.Folder;
+import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
+import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.List;
 public class FolderService {
 
     private final FolderRepository folderRepository;
+    private final FolderMapper folderMapper;
 
-    public FolderService(FolderRepository folderRepository) {
+    public FolderService(FolderRepository folderRepository, FolderMapper folderMapper) {
         this.folderRepository = folderRepository;
+        this.folderMapper = folderMapper;
     }
 
     public List<Folder> findByOwnerId(String ownerId) {
@@ -24,8 +27,10 @@ public class FolderService {
         return folderRepository.findById(id).orElse(null);
     }
 
-    public Folder save(Folder folder) {
-        return folderRepository.save(folder);
+    public FolderDto save(FolderDto folderDto) {
+        Folder folder=new Folder();
+        folder=folderMapper.convertToModel(folderDto);
+        return folderMapper.convertToDto(folderRepository.save(folder));
     }
 
     public void delete(String id) {

@@ -1,6 +1,7 @@
 package com.sheroozdrive.SheroozDrive.controller;
 
 import com.sheroozdrive.SheroozDrive.model.User;
+import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +27,12 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
+    public UserDto create(@RequestBody UserDto user) {
         return userService.save(user);
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public UserDto update(@RequestBody UserDto user) {
         return userService.save(user);
     }
 
