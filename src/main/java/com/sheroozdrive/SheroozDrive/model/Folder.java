@@ -19,9 +19,13 @@ public class Folder extends Base{
     private String ownerId;
     private String parentId;
     private List<String> fileIds;
+    private List<String> childFoldersIds;
 
     @DBRef
     private List<File> files;
+
+    @DBRef
+    private List<Folder> childFolders;
 
     public Folder(String id, String name, String ownerId, String parentId) {
         super(id);
