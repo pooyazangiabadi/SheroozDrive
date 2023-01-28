@@ -4,7 +4,7 @@ services:
     image: mongo:4.4
     container_name: mongo
     hostname: mongo
-    restart: unless-stopped
+    #restart: unless-stopped
     ports:
       - "${MONGO_HOST_PORT}:27017"
     environment:

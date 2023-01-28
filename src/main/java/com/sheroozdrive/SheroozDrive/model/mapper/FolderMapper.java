@@ -9,13 +9,10 @@ import org.springframework.stereotype.Component;
 import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 
 @Component
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class FolderMapper implements BaseMapper<Folder, FolderDto> {
-    private final FolderMapper folderMapper;
     private final FileMapper fileMapper;
 
-    public FolderMapper(FolderMapper folderMapper, FileMapper fileMapper) {
-        this.folderMapper = folderMapper;
+    public FolderMapper(FileMapper fileMapper) {
         this.fileMapper = fileMapper;
     }
 
@@ -25,7 +22,7 @@ public class FolderMapper implements BaseMapper<Folder, FolderDto> {
                 model.getName(),
                 model.getOwnerId(),
                 model.getParentId(),
-                emptyIfNull(model.getChildFolders()).stream().map(folderMapper::convertToDto).toList(),
+                emptyIfNull(model.getChildFolders()).stream().map(this::convertToDto).toList(),
                 emptyIfNull(model.getFiles()).stream().map(fileMapper::convertToDto).toList());
     }
 
