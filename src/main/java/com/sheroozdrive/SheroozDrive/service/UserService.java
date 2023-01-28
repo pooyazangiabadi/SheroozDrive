@@ -2,12 +2,15 @@ package com.sheroozdrive.SheroozDrive.service;
 
 import com.sheroozdrive.SheroozDrive.exception.UserDuplicateException;
 import com.sheroozdrive.SheroozDrive.exception.UserNotFoundException;
+import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.model.mapper.UserMapper;
 import com.sheroozdrive.SheroozDrive.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -31,6 +34,11 @@ public class UserService {
     public UserDto findById(String id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         return userMapper.convertToDto(user);
+    }
+
+    public List<UserDto> findAll(){
+        List<User> users=userRepository.findAll();
+        return users.stream().map(userMapper::convertToDto).toList();
     }
 
     public UserDto save(UserDto userDto) {

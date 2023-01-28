@@ -9,7 +9,12 @@ import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 
 @Service
 public class FolderService {
@@ -23,8 +28,24 @@ public class FolderService {
     }
 
     public List<FolderDto> findByOwnerId(String ownerId) {
-        List<Folder> folder=folderRepository.findByOwnerId(ownerId);
+        List<Folder> folder=folderRepository.findByOwnerIdAndParentIdNull(ownerId);
         return folder.stream().map(folderMapper::convertToDto).toList();
+        /*List<Folder> allFolders = folderRepository.findByOwnerId(ownerId);
+        Map<String, Folder> folderMap = allFolders.stream().collect(Collectors.toMap(folder -> folder.getId(), folder -> folder));
+
+        for (Folder folder : allFolders) {
+            String parentId = folder.getParentId();
+            if (parentId != null && folderMap.containsKey(parentId)) {
+                if(folderMap.get(parentId).getChildFolders()==null){
+                    folderMap.get(parentId).setChildFolders(new ArrayList<>());
+                }
+                folderMap.get(parentId).getChildFolders().add(folder);
+                folderMap.remove(folder.getId());
+            }
+        }
+
+        allFolders=new ArrayList<Folder>(folderMap.values());
+        return allFolders.stream().map(folderMapper::convertToDto).toList();*/
     }
 
     public FolderDto findById(String id) {
@@ -42,8 +63,16 @@ public class FolderService {
                 throw new FolderDuplicateException(folderDto.name());
             folder=folderMapper.convertToModel(folderDto);
         }
-
-        return folderMapper.convertToDto(folderRepository.save(folder));
+        folder=folderRepository.save(folder);
+        if(folder.getParentId()!=null){
+            Folder parentFolder=folderRepository.findById(folder.getParentId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
+            if(parentFolder.getChildFolders()==null){
+                parentFolder.setChildFolders(new ArrayList<>());
+            }
+            parentFolder.getChildFolders().add(folder);
+            folderRepository.save(parentFolder);
+        }
+        return folderMapper.convertToDto(folder);
     }
 
     public void delete(String id) {

@@ -18,8 +18,6 @@ public class Folder extends Base{
     private String name;
     private String ownerId;
     private String parentId;
-    private List<String> fileIds;
-    private List<String> childFoldersIds;
 
     @DBRef
     private List<File> files;
