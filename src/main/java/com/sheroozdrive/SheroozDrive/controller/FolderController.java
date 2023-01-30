@@ -22,6 +22,11 @@ public class FolderController {
         return folderService.findById(id);
     }
 
+    @GetMapping("/")
+    public FolderDto findByPath(@RequestParam String path){
+        return folderService.findByPath(path);
+    }
+
     @GetMapping("/owner/{ownerId}")
     public List<FolderDto> findByOwnerId(@PathVariable String ownerId) {
         return folderService.findByOwnerId(ownerId);

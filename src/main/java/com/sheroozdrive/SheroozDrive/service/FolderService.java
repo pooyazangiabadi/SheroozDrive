@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,5 +78,11 @@ public class FolderService {
 
     public void delete(String id) {
         folderRepository.deleteById(id);
+    }
+
+    public FolderDto findByPath(String path) {
+        List<String> items = Arrays.asList(path.split("/"));
+        items.forEach(null);
+        return null;
     }
 }
