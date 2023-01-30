@@ -4,10 +4,6 @@ Go to the project directory and execute the following command in the terminal
 ```
 docker network create sherooz-network
 docker-compose up
-docker exec -it mongo bash
- # mongo -u root -p root
- > use sherooz
- > db.createUser({user: "user1", pwd: "user1", roles: [{role: "readWrite", db: "sherooz"}]})
 ```
 
 ### Swagger ui url
