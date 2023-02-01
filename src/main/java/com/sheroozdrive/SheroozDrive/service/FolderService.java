@@ -4,6 +4,7 @@ import com.sheroozdrive.SheroozDrive.exception.FolderDuplicateException;
 import com.sheroozdrive.SheroozDrive.exception.FolderNotFoundException;
 import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
+import com.sheroozdrive.SheroozDrive.model.dto.FolderMapperTypeEnum;
 import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import org.springframework.beans.BeanUtils;
@@ -12,10 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 
 @Service
 public class FolderService {
@@ -82,7 +79,12 @@ public class FolderService {
 
     public FolderDto findByPath(String path) {
         List<String> items = Arrays.asList(path.split("/"));
-        items.forEach(null);
-        return null;
+        String parentId=null;
+        Folder folder=null;
+        for (String item:items) {
+            folder=folderRepository.findByNameAndParentId(item,parentId).orElseThrow(() -> new FolderNotFoundException(item));
+            parentId=folder.getId();
+        }
+        return folderMapper.convertToDto(folder, FolderMapperTypeEnum.FIRST_CHILD);
     }
 }
