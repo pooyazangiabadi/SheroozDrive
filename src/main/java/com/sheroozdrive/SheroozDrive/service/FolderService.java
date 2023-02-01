@@ -9,9 +9,9 @@ import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -51,6 +51,7 @@ public class FolderService {
         return folderMapper.convertToDto(folder);
     }
 
+    @Transactional
     public FolderDto save(FolderDto folderDto) {
         Folder folder;
         if(folderDto.id()!=null) {
@@ -62,8 +63,8 @@ public class FolderService {
             folder=folderMapper.convertToModel(folderDto);
         }
         folder=folderRepository.save(folder);
-        if(folder.getParentId()!=null){
-            Folder parentFolder=folderRepository.findById(folder.getParentId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
+        if(folder.getParent()!=null){
+            Folder parentFolder=folderRepository.findById(folder.getParent().getId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
             if(parentFolder.getChildFolders()==null){
                 parentFolder.setChildFolders(new ArrayList<>());
             }
@@ -78,7 +79,7 @@ public class FolderService {
     }
 
     public FolderDto findByPath(String path) {
-        List<String> items = Arrays.asList(path.split("/"));
+        String[] items = path.split("/");
         String parentId=null;
         Folder folder=null;
         for (String item:items) {
