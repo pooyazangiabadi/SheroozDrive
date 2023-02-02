@@ -40,7 +40,8 @@ public class FolderMapper implements BaseMapper<Folder, FolderDto> {
                 Optional.ofNullable(model.getOwner()).orElse(new User()).getId(),
                 Optional.ofNullable(model.getParent()).orElse(new Folder()).getId(),
                 emptyIfNull(model.getChildFolders()).stream().map(this::convertToDto).toList(),
-                emptyIfNull(model.getFiles()).stream().map(fileMapper::convertToDto).toList());
+                emptyIfNull(model.getFiles()).stream().map(fileMapper::convertToDto).toList()
+        );
     }
 
     @Override

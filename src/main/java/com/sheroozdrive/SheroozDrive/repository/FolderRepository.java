@@ -11,5 +11,11 @@ public interface FolderRepository extends MongoRepository<Folder, String> {
     List<Folder> findByOwnerIdAndParentIdNull(String ownerId);
     boolean existsByNameAndParentId(String name, String parentId);
 
-    Optional<Folder> findByNameAndParentId(String id, String parentId);
+    Optional<Folder> findByNameAndParentIdAndOwnerId(String name, String parent_id, String owner_id);
+
+    Optional<Folder> findByParentIsNullAndOwnerId(String owner_id);
+
+    Optional<Folder> findByNameAndParentId(String name, String parent_id);
+
+    Optional<List<Folder>> findByParentIsNull();
 }

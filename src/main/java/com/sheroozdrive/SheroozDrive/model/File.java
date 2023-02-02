@@ -12,13 +12,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class File extends Base{
     private String name;
     private long size;
-    private String ownerId;
+    private User owner;
     private Folder folder;
 
-    public File(String id, String name, long size, String ownerId) {
+    public File(String id, String name, long size, User owner) {
         super(id);
         this.name = name;
         this.size = size;
-        this.ownerId = ownerId;
+        this.owner = owner;
     }
 }

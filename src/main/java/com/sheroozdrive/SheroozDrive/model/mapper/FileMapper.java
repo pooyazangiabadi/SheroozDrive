@@ -1,8 +1,12 @@
 package com.sheroozdrive.SheroozDrive.model.mapper;
 
+import com.google.common.base.Strings;
 import com.sheroozdrive.SheroozDrive.model.File;
+import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.FileDto;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class FileMapper implements BaseMapper<File, FileDto> {
@@ -11,7 +15,8 @@ public class FileMapper implements BaseMapper<File, FileDto> {
         return new FileDto(model.getId(),
                 model.getName(),
                 model.getSize(),
-                model.getOwnerId());
+                Optional.ofNullable(model.getOwner()).orElse(new User()).getId()
+        );
     }
 
     @Override
@@ -19,6 +24,7 @@ public class FileMapper implements BaseMapper<File, FileDto> {
         return new File(dto.id(),
                 dto.name(),
                 dto.size(),
-                dto.ownerId());
+                Strings.isNullOrEmpty(dto.ownerId())?null:new User(dto.ownerId())
+        );
     }
 }
