@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/folders")
-public class FolderController {
+public class FolderController implements SecuredRestController {
 
     private final FolderService folderService;
 

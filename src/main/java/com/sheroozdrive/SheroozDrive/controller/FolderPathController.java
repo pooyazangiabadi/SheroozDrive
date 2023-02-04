@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/_")
-public class FolderPathController {
+public class FolderPathController implements SecuredRestController {
 
     private final FolderService folderService;
 

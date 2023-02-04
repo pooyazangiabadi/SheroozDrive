@@ -2,14 +2,13 @@ package com.sheroozdrive.SheroozDrive.controller;
 
 import com.sheroozdrive.SheroozDrive.model.File;
 import com.sheroozdrive.SheroozDrive.service.FileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/files")
-public class FileController {
+public class FileController implements SecuredRestController {
 
     private final FileService fileService;
 
