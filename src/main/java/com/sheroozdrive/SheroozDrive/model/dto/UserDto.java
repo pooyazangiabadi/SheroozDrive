@@ -5,5 +5,6 @@ import jakarta.validation.constraints.NotNull;
 public record UserDto(String id,
                       @NotNull(message = "Name not be null") String name,
                       @NotNull(message = "Email not be null") String email,
-                      String password) {
+                      String password,
+                      RoleEnum role) {
 }

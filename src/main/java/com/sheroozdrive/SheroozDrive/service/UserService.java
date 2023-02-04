@@ -2,7 +2,6 @@ package com.sheroozdrive.SheroozDrive.service;
 
 import com.sheroozdrive.SheroozDrive.exception.UserDuplicateException;
 import com.sheroozdrive.SheroozDrive.exception.UserNotFoundException;
-import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.UserDto;
 import com.sheroozdrive.SheroozDrive.model.mapper.UserMapper;
@@ -24,7 +23,7 @@ public class UserService {
     }
 
     public UserDto findByEmail(String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
         if (user==null)
             throw new UserNotFoundException(email);
 
