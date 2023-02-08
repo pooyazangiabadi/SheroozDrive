@@ -15,4 +15,10 @@ public interface FolderRepository extends MongoRepository<Folder, String> {
 
     Optional<List<Folder>> findByParentIsNullAndOwnerId(String owner_id);
 
+    Optional<Folder> findByIdAndOwnerId(String id, String owner_id);
+
+    void deleteByIdAndOwnerId(String id, String owner_id);
+
+    Boolean existsByIdAndOwnerId(String id, String owner_id);
+
 }

@@ -61,13 +61,20 @@ public class FolderService {
     }
 
     public FolderDto findById(String id) {
-        Folder folder=folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException(id));
+        User user=getUser();
+        Folder folder=null;
+        if(user.getRole().equals("ADMIN")) {
+            folder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException(id));
+        }else {
+            folder = folderRepository.findByIdAndOwnerId(id,user.getId()).orElseThrow(() -> new FolderNotFoundException(id));
+        }
         return folderMapper.convertToDto(folder);
     }
 
     @Transactional
     public FolderDto save(FolderDto folderDto) {
         Folder folder;
+        User user=getUser();
         if(folderDto.id()!=null) {
             folder=folderRepository.findById(folderDto.id()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
             BeanUtils.copyProperties(folderDto, folder);
@@ -76,6 +83,7 @@ public class FolderService {
                 throw new FolderDuplicateException(folderDto.name());
             folder=folderMapper.convertToModel(folderDto);
         }
+        folder.setOwner(user);
         folder=folderRepository.save(folder);
         if(folder.getParent()!=null){
             Folder parentFolder=folderRepository.findById(folder.getParent().getId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
@@ -89,10 +97,18 @@ public class FolderService {
     }
 
     public void delete(String id) {
-        if(!folderRepository.existsById(id)){
-            throw new FolderNotFoundException(id);
+        User user=getUser();
+        if(user.getRole().equals("ADMIN")) {
+            if(!folderRepository.existsById(id)){
+                throw new FolderNotFoundException(id);
+            }
+            folderRepository.deleteById(id);
+        }else {
+            if(!folderRepository.existsByIdAndOwnerId(id, user.getId())){
+                throw new FolderNotFoundException(id);
+            }
+            folderRepository.deleteByIdAndOwnerId(id,user.getId());
         }
-        folderRepository.deleteById(id);
     }
 
     public FolderDto findByPath(String path) {
