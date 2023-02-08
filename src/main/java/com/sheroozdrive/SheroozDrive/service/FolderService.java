@@ -1,14 +1,17 @@
 package com.sheroozdrive.SheroozDrive.service;
 
+import com.sheroozdrive.SheroozDrive.auth.IAuthenticationFacade;
 import com.sheroozdrive.SheroozDrive.exception.FolderDuplicateException;
 import com.sheroozdrive.SheroozDrive.exception.FolderNotFoundException;
 import com.sheroozdrive.SheroozDrive.model.Folder;
+import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderMapperTypeEnum;
 import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FileRepository;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +26,17 @@ public class FolderService {
     private final FolderMapper folderMapper;
     private final FileRepository fileRepository;
 
+    @Autowired
+    private IAuthenticationFacade authenticationFacade;
+
     public FolderService(FolderRepository folderRepository, FolderMapper folderMapper, FileRepository fileRepository) {
         this.folderRepository = folderRepository;
         this.folderMapper = folderMapper;
         this.fileRepository = fileRepository;
+    }
+
+    public User getUser(){
+        return (User) authenticationFacade.getAuthentication().getPrincipal();
     }
 
     public List<FolderDto> findByOwnerId(String ownerId) {
@@ -90,15 +100,17 @@ public class FolderService {
         String parentId=null;
         Folder folder=null;
 
+        String ownerId=getUser().getId();
+
         if (items.length>=1 && items[0].equals("root")) {
             if(items.length==1){
                 folder=new Folder(null,"root",null,null);
-                folder.setChildFolders(folderRepository.findByParentIsNull().orElse(new ArrayList<>()));
+                folder.setChildFolders(folderRepository.findByParentIsNullAndOwnerId(ownerId).orElse(new ArrayList<>()));
                 folder.setFiles(fileRepository.findByFolderIsNull().orElse(new ArrayList<>()));
             }else {
                 items = Arrays.copyOfRange(items, 1, items.length);
                 for (String item:items) {
-                    folder=folderRepository.findByNameAndParentId(item,parentId).orElseThrow(() -> new FolderNotFoundException(item));
+                    folder=folderRepository.findByNameAndParentIdAndOwnerId(item,parentId,ownerId).orElseThrow(() -> new FolderNotFoundException(item));
                     parentId=folder.getId();
                 }
             }
