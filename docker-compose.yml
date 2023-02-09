@@ -21,14 +21,32 @@ services:
       - main-network
     command: ["--bind_ip", "0.0.0.0"]
 
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: docker/rabbitmq/Dockerfile
+    container_name: rabbitmq
+    networks:
+      - main-network
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "61613:61613"
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "15672:15672"
+
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/app/Dockerfile
     container_name: $APP_NAME
     restart: always
     depends_on:
       - mongo
+      - rabbitmq
     ports:
       - "${SERVER_HOST_PORT}:8000"
     environment:
@@ -42,6 +60,8 @@ services:
       - SPRING_DATA_MONGODB_USERNAME=$MONGO_DB_USERNAME
       - SPRING_DATA_MONGODB_PASSWORD=$MONGO_DB_PASSWORD
       - SPRING_DATA_MONGODB_DATABASE=$MONGO_DB
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=61613
     networks:
       - main-network
 

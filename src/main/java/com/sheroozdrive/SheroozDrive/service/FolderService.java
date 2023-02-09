@@ -7,11 +7,13 @@ import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderMapperTypeEnum;
+import com.sheroozdrive.SheroozDrive.model.dto.Notification;
 import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FileRepository;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,9 @@ public class FolderService {
 
     @Autowired
     private IAuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private SimpMessageSendingOperations messagingTemplate;
 
     public FolderService(FolderRepository folderRepository, FolderMapper folderMapper, FileRepository fileRepository) {
         this.folderRepository = folderRepository;
@@ -117,6 +122,11 @@ public class FolderService {
         Folder folder=null;
 
         String ownerId=getUser().getId();
+
+        Notification notification = new Notification();
+        notification.setType("Leave");
+        notification.setUser(ownerId);
+        messagingTemplate.convertAndSend("/topic/public", notification);
 
         if (items.length>=1 && items[0].equals("root")) {
             if(items.length==1){
