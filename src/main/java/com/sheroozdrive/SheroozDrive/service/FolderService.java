@@ -89,6 +89,29 @@ public class FolderService {
         return folderMapper.convertToDto(folder);
     }
 
+    @Transactional
+    public FolderDto testSave(FolderDto folderDto) {
+        Folder folder;
+        if(folderDto.id()!=null) {
+            folder=folderRepository.findById(folderDto.id()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
+            BeanUtils.copyProperties(folderDto, folder);
+        }else{
+            if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.ownerId()))
+                throw new FolderDuplicateException(folderDto.name());
+            folder=folderMapper.convertToModel(folderDto);
+        }
+        folder=folderRepository.save(folder);
+        if(folder.getParent()!=null){
+            Folder parentFolder=folderRepository.findById(folder.getParent().getId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
+            if(parentFolder.getChildFolders()==null){
+                parentFolder.setChildFolders(new ArrayList<>());
+            }
+            parentFolder.getChildFolders().add(folder);
+            folderRepository.save(parentFolder);
+        }
+        return folderMapper.convertToDto(folder);
+    }
+
     public void delete(String id) {
         User user=getUser();
         if(user.getRole().equals("ADMIN")) {
