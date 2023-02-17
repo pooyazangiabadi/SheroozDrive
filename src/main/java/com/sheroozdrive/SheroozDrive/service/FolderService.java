@@ -11,6 +11,8 @@ import com.sheroozdrive.SheroozDrive.model.dto.Notification;
 import com.sheroozdrive.SheroozDrive.model.mapper.FolderMapper;
 import com.sheroozdrive.SheroozDrive.repository.FileRepository;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -33,6 +35,8 @@ public class FolderService {
 
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
+
+    Logger logger = LoggerFactory.getLogger(FolderService.class);
 
     public FolderService(FolderRepository folderRepository, FolderMapper folderMapper, FileRepository fileRepository) {
         this.folderRepository = folderRepository;
