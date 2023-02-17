@@ -47,22 +47,6 @@ public class FolderService {
     public List<FolderDto> findByOwnerId(String ownerId) {
         List<Folder> folder=folderRepository.findByOwnerIdAndParentIdNull(ownerId);
         return folder.stream().map(folderMapper::convertToDto).toList();
-        /*List<Folder> allFolders = folderRepository.findByOwnerId(ownerId);
-        Map<String, Folder> folderMap = allFolders.stream().collect(Collectors.toMap(folder -> folder.getId(), folder -> folder));
-
-        for (Folder folder : allFolders) {
-            String parentId = folder.getParentId();
-            if (parentId != null && folderMap.containsKey(parentId)) {
-                if(folderMap.get(parentId).getChildFolders()==null){
-                    folderMap.get(parentId).setChildFolders(new ArrayList<>());
-                }
-                folderMap.get(parentId).getChildFolders().add(folder);
-                folderMap.remove(folder.getId());
-            }
-        }
-
-        allFolders=new ArrayList<Folder>(folderMap.values());
-        return allFolders.stream().map(folderMapper::convertToDto).toList();*/
     }
 
     public FolderDto findById(String id) {
@@ -84,7 +68,7 @@ public class FolderService {
             folder=folderRepository.findById(folderDto.id()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
             BeanUtils.copyProperties(folderDto, folder);
         }else{
-            if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.parentId()))
+            if(folderRepository.existsByNameAndParentId(folderDto.name(),user.getId()))
                 throw new FolderDuplicateException(folderDto.name());
             folder=folderMapper.convertToModel(folderDto);
         }
