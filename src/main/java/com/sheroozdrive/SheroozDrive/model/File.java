@@ -14,11 +14,14 @@ public class File extends Base{
     private long size;
     private User owner;
     private Folder folder;
+    private String type;
 
-    public File(String id, String name, long size, User owner) {
+    public File(String id, String name, long size, User owner, Folder folder, String type) {
         super(id);
         this.name = name;
         this.size = size;
         this.owner = owner;
+        this.folder = folder;
+        this.type = type;
     }
 }
