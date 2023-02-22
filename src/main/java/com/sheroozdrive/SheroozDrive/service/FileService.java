@@ -2,6 +2,7 @@ package com.sheroozdrive.SheroozDrive.service;
 
 import com.sheroozdrive.SheroozDrive.model.File;
 import com.sheroozdrive.SheroozDrive.repository.FileRepository;
+import com.sheroozdrive.SheroozDrive.util.ThumbnailGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final ThumbnailGenerator thumbnailGenerator;
 
     @Value("${setting.upload.dir}")
     private String uploadDir;
@@ -51,6 +53,8 @@ public class FileService {
         String filePath = System.getProperty("user.dir") + uploadDir + fileName;
         java.io.File destFile = new java.io.File(filePath);
         file.transferTo(destFile);
+
+        thumbnailGenerator.generateThumbnail(destFile);
 
         return new ResponseEntity<>(fileEntity, HttpStatus.OK);
     }
@@ -83,8 +87,9 @@ public class FileService {
                 .body(resource);
     }
 
-    public FileService(FileRepository fileRepository) {
+    public FileService(FileRepository fileRepository, ThumbnailGenerator thumbnailGenerator) {
         this.fileRepository = fileRepository;
+        this.thumbnailGenerator = thumbnailGenerator;
     }
 
     public List<File> findByOwnerId(String ownerId) {
