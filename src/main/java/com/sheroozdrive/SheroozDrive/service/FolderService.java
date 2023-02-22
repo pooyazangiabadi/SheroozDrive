@@ -68,38 +68,17 @@ public class FolderService {
     public FolderDto save(FolderDto folderDto) {
         Folder folder;
         User user=getUser();
+
+        if(folderRepository.existsByNameAndParentIdAndOwnerId(folderDto.name(),folderDto.parentId(),user.getId()))
+            throw new FolderDuplicateException(folderDto.name());
+
         if(folderDto.id()!=null) {
             folder=folderRepository.findById(folderDto.id()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
             BeanUtils.copyProperties(folderDto, folder);
         }else{
-            if(folderRepository.existsByNameAndParentId(folderDto.name(),user.getId()))
-                throw new FolderDuplicateException(folderDto.name());
             folder=folderMapper.convertToModel(folderDto);
         }
         folder.setOwner(user);
-        folder=folderRepository.save(folder);
-        if(folder.getParent()!=null){
-            Folder parentFolder=folderRepository.findById(folder.getParent().getId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
-            if(parentFolder.getChildFolders()==null){
-                parentFolder.setChildFolders(new ArrayList<>());
-            }
-            parentFolder.getChildFolders().add(folder);
-            folderRepository.save(parentFolder);
-        }
-        return folderMapper.convertToDto(folder);
-    }
-
-    @Transactional
-    public FolderDto testSave(FolderDto folderDto) {
-        Folder folder;
-        if(folderDto.id()!=null) {
-            folder=folderRepository.findById(folderDto.id()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));
-            BeanUtils.copyProperties(folderDto, folder);
-        }else{
-            if(folderRepository.existsByNameAndParentId(folderDto.name(),folderDto.ownerId()))
-                throw new FolderDuplicateException(folderDto.name());
-            folder=folderMapper.convertToModel(folderDto);
-        }
         folder=folderRepository.save(folder);
         if(folder.getParent()!=null){
             Folder parentFolder=folderRepository.findById(folder.getParent().getId()).orElseThrow(() -> new FolderDuplicateException(folderDto.name()));

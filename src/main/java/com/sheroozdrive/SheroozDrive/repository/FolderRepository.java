@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface FolderRepository extends MongoRepository<Folder, String> {
     List<Folder> findByOwnerId(String ownerId);
     List<Folder> findByOwnerIdAndParentIdNull(String ownerId);
-    boolean existsByNameAndParentId(String name, String parentId);
+    boolean existsByNameAndParentIdAndOwnerId(String name, String parent_id, String owner_id);
 
     Optional<Folder> findByNameAndParentIdAndOwnerId(String name, String parent_id, String owner_id);
 
