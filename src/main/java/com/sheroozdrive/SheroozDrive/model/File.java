@@ -18,12 +18,13 @@ public class File extends Base{
     private String type;
     private Binary thumbnail;
 
-    public File(String id, String name, long size, User owner, Folder folder, String type) {
+    public File(String id, String name, long size, User owner, Folder folder, String type,Binary thumbnail) {
         super(id);
         this.name = name;
         this.size = size;
         this.owner = owner;
         this.folder = folder;
         this.type = type;
+        this.thumbnail = thumbnail;
     }
 }

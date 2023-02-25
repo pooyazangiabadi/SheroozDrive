@@ -18,7 +18,8 @@ public class FileMapper implements BaseMapper<File, FileDto> {
                 model.getSize(),
                 Optional.ofNullable(model.getOwner()).orElse(new User()).getId(),
                 Optional.ofNullable(model.getFolder()).orElse(new Folder()).getId(),
-                model.getType()
+                model.getType(),
+                model.getThumbnail()
         );
     }
 
@@ -29,7 +30,8 @@ public class FileMapper implements BaseMapper<File, FileDto> {
                 dto.size(),
                 Strings.isNullOrEmpty(dto.ownerId())?null:new User(dto.ownerId()),
                 Strings.isNullOrEmpty(dto.folderId())?null:new Folder(dto.folderId()),
-                dto.type()
+                dto.type(),
+                dto.thumbnail()
         );
     }
 }
