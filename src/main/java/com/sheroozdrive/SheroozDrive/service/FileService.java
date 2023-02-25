@@ -1,11 +1,14 @@
 package com.sheroozdrive.SheroozDrive.service;
 
+import com.sheroozdrive.SheroozDrive.auth.IAuthenticationFacade;
 import com.sheroozdrive.SheroozDrive.exception.FolderNotFoundException;
 import com.sheroozdrive.SheroozDrive.model.File;
 import com.sheroozdrive.SheroozDrive.model.Folder;
+import com.sheroozdrive.SheroozDrive.model.User;
 import com.sheroozdrive.SheroozDrive.repository.FileRepository;
 import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import com.sheroozdrive.SheroozDrive.util.ThumbnailGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -30,6 +33,8 @@ public class FileService {
     private final FileRepository fileRepository;
     private final FolderRepository folderRepository;
     private final ThumbnailGenerator thumbnailGenerator;
+    @Autowired
+    private IAuthenticationFacade authenticationFacade;
 
 
     @Value("${setting.upload.dir}")
@@ -38,8 +43,17 @@ public class FileService {
     @Value("${setting.upload.maxsize}")
     private int maxUploadSize;
 
-    public ResponseEntity<?> uploadFile(String folderId,MultipartFile file) throws IOException {
+    public FileService(FileRepository fileRepository, FolderRepository folderRepository, ThumbnailGenerator thumbnailGenerator) {
+        this.fileRepository = fileRepository;
+        this.folderRepository = folderRepository;
+        this.thumbnailGenerator = thumbnailGenerator;
+    }
 
+    public User getUser(){
+        return (User) authenticationFacade.getAuthentication().getPrincipal();
+    }
+
+    public ResponseEntity<?> uploadFile(String folderId,MultipartFile file) throws IOException {
         if (!Arrays.asList("application/pdf", "video/mp4", "image/jpeg", "image/png").contains(file.getContentType())) {
             return new ResponseEntity<>("Unsupported media type.", HttpStatus.BAD_REQUEST);
         }
@@ -48,10 +62,13 @@ public class FileService {
             return new ResponseEntity<>("File size exceeds the limit.", HttpStatus.BAD_REQUEST);
         }
 
+        User user=getUser();
+
         File fileEntity = new File();
         fileEntity.setName(file.getOriginalFilename());
         fileEntity.setType(file.getContentType());
         fileEntity.setSize(file.getSize());
+        fileEntity.setOwner(user);
         if(folderId!=null) {
             fileEntity.setFolder(new Folder(folderId));
         }
@@ -72,7 +89,8 @@ public class FileService {
         java.io.File destFile = new java.io.File(filePath);
         file.transferTo(destFile);
 
-        thumbnailGenerator.generateThumbnail(destFile);
+        fileEntity.setThumbnail(thumbnailGenerator.generateThumbnail(destFile));
+        fileEntity = fileRepository.save(fileEntity);
 
         return new ResponseEntity<>(fileEntity, HttpStatus.OK);
     }
@@ -103,12 +121,6 @@ public class FileService {
                 .contentLength(fileContent.length)
                 .contentType(MediaType.parseMediaType(fileEntity.getType()))
                 .body(resource);
-    }
-
-    public FileService(FileRepository fileRepository, FolderRepository folderRepository, ThumbnailGenerator thumbnailGenerator) {
-        this.fileRepository = fileRepository;
-        this.folderRepository = folderRepository;
-        this.thumbnailGenerator = thumbnailGenerator;
     }
 
     public List<File> findByOwnerId(String ownerId) {
