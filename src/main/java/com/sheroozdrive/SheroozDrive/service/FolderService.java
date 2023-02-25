@@ -122,7 +122,7 @@ public class FolderService {
             if(items.length==1){
                 folder=new Folder(null,"root",null,null);
                 folder.setChildFolders(folderRepository.findByParentIsNullAndOwnerId(ownerId).orElse(new ArrayList<>()));
-                folder.setFiles(fileRepository.findByFolderIsNull().orElse(new ArrayList<>()));
+                folder.setFiles(fileRepository.findByFolderIsNullAndOwnerId(ownerId).orElse(new ArrayList<>()));
             }else {
                 items = Arrays.copyOfRange(items, 1, items.length);
                 for (String item:items) {

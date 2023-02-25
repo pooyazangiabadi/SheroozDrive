@@ -23,8 +23,8 @@ public class FileController implements SecuredRestController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        return fileService.uploadFile(file);
+    public ResponseEntity<?> uploadFile(@RequestParam("folder") String folderId,@RequestParam("file") MultipartFile file) throws IOException {
+        return fileService.uploadFile(folderId, file);
     }
 
     @GetMapping("/{id}")

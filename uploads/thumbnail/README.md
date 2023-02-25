@@ -1,0 +1,1 @@
+# Thumbnail file location

@@ -1,7 +1,10 @@
 package com.sheroozdrive.SheroozDrive.service;
 
+import com.sheroozdrive.SheroozDrive.exception.FolderNotFoundException;
 import com.sheroozdrive.SheroozDrive.model.File;
+import com.sheroozdrive.SheroozDrive.model.Folder;
 import com.sheroozdrive.SheroozDrive.repository.FileRepository;
+import com.sheroozdrive.SheroozDrive.repository.FolderRepository;
 import com.sheroozdrive.SheroozDrive.util.ThumbnailGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +28,9 @@ import java.util.Optional;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final FolderRepository folderRepository;
     private final ThumbnailGenerator thumbnailGenerator;
+
 
     @Value("${setting.upload.dir}")
     private String uploadDir;
@@ -32,7 +38,7 @@ public class FileService {
     @Value("${setting.upload.maxsize}")
     private int maxUploadSize;
 
-    public ResponseEntity<?> uploadFile(MultipartFile file) throws IOException {
+    public ResponseEntity<?> uploadFile(String folderId,MultipartFile file) throws IOException {
 
         if (!Arrays.asList("application/pdf", "video/mp4", "image/jpeg", "image/png").contains(file.getContentType())) {
             return new ResponseEntity<>("Unsupported media type.", HttpStatus.BAD_REQUEST);
@@ -46,8 +52,20 @@ public class FileService {
         fileEntity.setName(file.getOriginalFilename());
         fileEntity.setType(file.getContentType());
         fileEntity.setSize(file.getSize());
+        if(folderId!=null) {
+            fileEntity.setFolder(new Folder(folderId));
+        }
 
         fileEntity = fileRepository.save(fileEntity);
+
+        if(fileEntity.getFolder()!=null){
+            Folder folder=folderRepository.findById(fileEntity.getFolder().getId()).orElseThrow(() -> new FolderNotFoundException(folderId));
+            if(folder.getFiles()==null){
+                folder.setFiles(new ArrayList<>());
+            }
+            folder.getFiles().add(fileEntity);
+            folderRepository.save(folder);
+        }
 
         String fileName = fileEntity.getId() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename());
         String filePath = System.getProperty("user.dir") + uploadDir + fileName;
@@ -87,8 +105,9 @@ public class FileService {
                 .body(resource);
     }
 
-    public FileService(FileRepository fileRepository, ThumbnailGenerator thumbnailGenerator) {
+    public FileService(FileRepository fileRepository, FolderRepository folderRepository, ThumbnailGenerator thumbnailGenerator) {
         this.fileRepository = fileRepository;
+        this.folderRepository = folderRepository;
         this.thumbnailGenerator = thumbnailGenerator;
     }
 

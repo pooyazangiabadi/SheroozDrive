@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface FileRepository extends MongoRepository<File, String> {
     List<File> findByOwnerId(String ownerId);
 
-    Optional<List<File>> findByFolderIsNull();
+    Optional<List<File>> findByFolderIsNullAndOwnerId(String owner_id);
 }
