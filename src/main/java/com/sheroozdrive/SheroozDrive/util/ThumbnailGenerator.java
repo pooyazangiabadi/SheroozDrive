@@ -1,5 +1,6 @@
 package com.sheroozdrive.SheroozDrive.util;
 
+import com.sheroozdrive.SheroozDrive.service.FolderService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.bson.BsonBinarySubType;
@@ -28,6 +29,8 @@ public class ThumbnailGenerator {
         String fileName = inputFile.getName();
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
+        logger.info(String.format("--> Generate Thumbnail for File %s with %s extension",fileName,fileExtension));
+
         if (fileExtension.equals("jpg") || fileExtension.equals("jpeg") || fileExtension.equals("png")) {
             return generateThumbnailForImage(inputFile);
         } else if (fileExtension.equals("mp4") || fileExtension.equals("mov") || fileExtension.equals("avi")) {
@@ -39,12 +42,14 @@ public class ThumbnailGenerator {
     }
 
     private Binary generateThumbnailForImage(File inputFile) throws IOException {
+        logger.info("--> Start generate thumbnail for image");
         BufferedImage bufferedImage = ImageIO.read(inputFile);
         return getBinary(bufferedImage);
     }
 
 
     private Binary generateThumbnailForPDF(File inputFile) throws IOException {
+        logger.info("--> Start generate thumbnail for pdf");
         PDDocument document = PDDocument.load(inputFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300);
@@ -52,10 +57,13 @@ public class ThumbnailGenerator {
     }
 
     private Binary getBinary(BufferedImage bufferedImage) throws IOException {
+        logger.info("--> Start getBinary()");
         BufferedImage thumbnail = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, uploadThumbSize, Scalr.OP_ANTIALIAS);
         ByteArrayOutputStream thumbOutput = new ByteArrayOutputStream();
         ImageIO.write(thumbnail, "jpg", thumbOutput);
         byte[] bytes = thumbOutput.toByteArray();
-        return new Binary(BsonBinarySubType.BINARY, bytes);
+        Binary binary= new Binary(BsonBinarySubType.BINARY, bytes);
+        logger.info("--> binary : " + binary);
+        return binary;
     }
 }
