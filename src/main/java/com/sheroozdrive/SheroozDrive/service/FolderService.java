@@ -126,7 +126,7 @@ public class FolderService {
             }else {
                 items = Arrays.copyOfRange(items, 1, items.length);
                 for (String item:items) {
-                    folder=folderRepository.findByNameAndParentIdAndOwnerId(item,parentId,ownerId).orElseThrow(() -> new FolderNotFoundException(item));
+                    folder=folderRepository.findByNameAndParentIdAndOwnerId(item.replace("%20"," "),parentId,ownerId).orElseThrow(() -> new FolderNotFoundException(item));
                     parentId=folder.getId();
                 }
             }
