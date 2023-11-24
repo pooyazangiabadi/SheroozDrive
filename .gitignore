@@ -22,3 +22,5 @@ target/*.jar
 
 mongodb/data
 mongodb/log
+
+error.log
