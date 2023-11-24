@@ -1,4 +1,4 @@
-FROM rabbitmq:3.9-management
+FROM docker.arvancloud.ir/rabbitmq:3.9-management
 
 RUN rabbitmq-plugins enable rabbitmq_management
 RUN rabbitmq-plugins enable rabbitmq_stomp

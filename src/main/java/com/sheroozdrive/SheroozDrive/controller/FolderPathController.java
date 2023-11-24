@@ -3,10 +3,12 @@ package com.sheroozdrive.SheroozDrive.controller;
 import com.sheroozdrive.SheroozDrive.model.dto.FolderDto;
 import com.sheroozdrive.SheroozDrive.service.FolderService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/_")
 public class FolderPathController implements SecuredRestController {
