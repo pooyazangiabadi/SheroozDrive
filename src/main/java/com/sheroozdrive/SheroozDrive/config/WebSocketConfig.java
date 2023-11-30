@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${spring.rabbitmq.host}")
     private String rabbitHost;
 
-    @Value("${spring.rabbitmq.port}")
+    @Value("${rabbitmq.websoket.port}")
     private int rabbitPort;
 
     @Override

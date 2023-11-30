@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/ws/**")
+                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/ws/**","/mq/**","/tus","/tus/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -48,7 +48,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("content-type", "authorization"));
+        configuration.setAllowedHeaders(Arrays.asList("content-type", "authorization","Upload-Length", "Tus-Resumable", "Upload-Metadata"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
